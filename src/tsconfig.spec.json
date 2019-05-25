@@ -5,6 +5,11 @@
     "types": [
       "jasmine",
       "node"
+    ],
+    "lib": [
+      "es2017",
+      "dom",
+      "esnext.asynciterable"
     ]
   },
   "files": [

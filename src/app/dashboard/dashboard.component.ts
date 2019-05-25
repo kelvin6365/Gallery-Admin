@@ -14,4 +14,8 @@ export class DashboardComponent {
   changeTrigger(): void {
     this.triggerTemplate = this.customTrigger;
   }
+
+  handleCollapsed(): void {
+    this.isCollapsed =!this.isCollapsed;
+  }
 }

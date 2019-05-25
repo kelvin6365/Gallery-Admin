@@ -24,14 +24,7 @@
         </ul>
       </nz-sider>
       <nz-layout>
-        <nz-header style="background: #fff; padding:0;">
-          <i
-            class="trigger"
-            nz-icon
-            [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-            (click)="isCollapsed = !isCollapsed"
-          ></i>
-        </nz-header>
+        <app-header [isCollapsed]=isCollapsed (handleCollapsed)="handleCollapsed()"></app-header>
         <nz-content style="margin:0 16px;">
           <nz-breadcrumb style="margin:16px 0;">
             <nz-breadcrumb-item>User</nz-breadcrumb-item>
