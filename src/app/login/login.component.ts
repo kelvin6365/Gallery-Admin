@@ -1,5 +1,5 @@
 import { TokenService } from './../Services/token.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -20,6 +20,7 @@ const LoginFormGetUserInfoQuery = gql`
       username
       email
       name
+      user_type
       UserFavourites {
         video_id
       }
@@ -34,6 +35,7 @@ const LoginFormGetUserInfoQuery = gql`
 })
 export class LoginComponent implements OnInit {
   validateForm: FormGroup;
+  @Input() isNotAdmin = false;
 
   submitForm(): void {
     for (const i in this.validateForm.controls) {
@@ -86,8 +88,18 @@ export class LoginComponent implements OnInit {
       .valueChanges
       .subscribe(({ data, loading }) => {
         console.log("Get User Data:",data);
-        localStorage.setItem("user_data",JSON.stringify(data.user));
-        this.router.navigate(['/m']);
+        if(data.user.user_type!=2){
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          this.isNotAdmin=true;
+        }
+        else
+        {
+          this.isNotAdmin=false;
+          localStorage.setItem("user_data",JSON.stringify(data.user));
+          this.router.navigate(['/m']);
+        }
+        
       });
   }
 

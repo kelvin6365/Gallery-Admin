@@ -21,6 +21,14 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
+    
+          
+          <nz-form-explain *ngIf="isNotAdmin"
+            >Your Acount is not allow to access!</nz-form-explain
+          >
+       
+      </nz-form-item>
+      <nz-form-item>
         <nz-form-control>
    
           <button nz-button class="login-form-button" [nzType]="'primary'">Log in</button>
