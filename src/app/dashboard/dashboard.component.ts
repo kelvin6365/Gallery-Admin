@@ -1,4 +1,5 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router , RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,6 +9,11 @@ import { Component, TemplateRef, ViewChild } from '@angular/core';
 export class DashboardComponent {
   isCollapsed = false;
   triggerTemplate: TemplateRef<void> | null = null;
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router
+  ) { } 
+          
   @ViewChild('trigger') customTrigger: TemplateRef<void>;
 
   /** custom trigger can be TemplateRef **/
@@ -18,4 +24,6 @@ export class DashboardComponent {
   handleCollapsed(): void {
     this.isCollapsed =!this.isCollapsed;
   }
+
+  
 }

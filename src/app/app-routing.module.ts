@@ -1,29 +1,45 @@
+import { UserlistComponent } from './User/userlist/userlist.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { BeforeLoginService } from './Services/before-login.service';
-import { AfterLoginService } from './Services/after-login.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
+import { IndexComponent } from './index/index.component';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent,
-    canActivate: [BeforeLoginService]
-  },
-  { path: 'm',      component: DashboardComponent,
-    canActivate: [AfterLoginService]
-  },  
   { path: '',
     redirectTo: '/login',
     pathMatch: 'full'
   },
-  { path: '**', 
+  { path: 'm',
+    redirectTo: '/m/(dashboard:index)',
+    pathMatch: 'full'
+  },
+  {
+    path: 'm', component: DashboardComponent, children: [
+      {
+        path: 'index' ,
+        component: IndexComponent ,outlet:"dashboard"
+      },
+      {
+        path: 'user', 
+        component: UserlistComponent ,outlet:"dashboard"
+      
+      },
+    ]
+  },
+  { path: 'login', component: LoginComponent,
+    canActivate: [BeforeLoginService]
+  },
+  
+  /*{ path: '**', 
     redirectTo: '/login',
     pathMatch: 'full'  
-  }
+  }*/
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes,{ enableTracing: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

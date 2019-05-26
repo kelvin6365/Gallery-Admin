@@ -1,0 +1,63 @@
+<nz-content>
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>User</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <div style="padding:24px; background: #fff; min-height: 360px;">
+   
+    <nz-table
+      #dynamicTable
+      [nzScroll]="fixHeader ? { y: '240px' ,x:'800x'} : {x:'800x'}"
+      [nzData]="listOfData"
+      [nzBordered]="bordered"
+      [nzSimple]="simple"
+      [nzLoading]="loading"
+      [nzPaginationPosition]="position"
+      [nzShowSizeChanger]="sizeChanger"
+      [nzFrontPagination]="pagination"
+      [nzShowPagination]="pagination"
+      [nzFooter]="footer ? 'Here is Footer' : null"
+      [nzTitle]="title ? 'User List' : null"
+      [nzSize]="size"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+        <tr *ngIf="header">
+          <th nzWidth="40px" nzShowExpand *ngIf="expandable"></th>
+          <th
+            nzWidth="62px"
+            nzShowCheckbox
+            *ngIf="checkbox"
+            [(nzChecked)]="allChecked"
+            [nzIndeterminate]="indeterminate"
+            (nzCheckedChange)="checkAll($event)"
+          ></th>
+          <th nzWidth="150px">Name</th>
+          <th nzWidth="70px">Username</th>
+          <th >email</th>
+          <th nzWidth="100px">User Type</th>
+          <th nzWidth="130px">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-template ngFor let-data [ngForOf]="dynamicTable.data">
+          <tr>
+            <td nzShowExpand *ngIf="expandable" [(nzExpand)]="data.expand"></td>
+            <td nzShowCheckbox *ngIf="checkbox" [(nzChecked)]="data.checked" (nzCheckedChange)="refreshStatus()"></td>
+            <td>{{ data.name }}</td>
+            <td>{{ data.username }}</td>
+            <td>{{ data.email }}</td>
+            <td>{{ data.user_type==1?"User":"Admin" }}</td>
+            <td>
+              <div><a href="#">Action</a></div>
+              <div><a href="#">Delete</a></div>
+            </td>
+          </tr>
+          <tr [nzExpand]="data.expand && expandable">
+            <td></td>
+            <td [attr.colspan]="checkbox ? 5 : 4">{{ data.description }}</td>
+          </tr>
+        </ng-template>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-content>

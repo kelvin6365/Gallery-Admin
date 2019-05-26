@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+.ant-layout-content {
+    margin: 40px 26px 0 26px;
+}
+
+.app_header {
+    position: fixed;
+    z-index: 99999;
+}
+
+.app_header.open {
+    width: calc(100%-200px);
+    width:-webkit-calc(100% - 200px);
+}
+
+.app_header.close {
+    width: calc(100%-80px);
+    width:-webkit-calc(100% - 80px);
+}
