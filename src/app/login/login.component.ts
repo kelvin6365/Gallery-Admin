@@ -5,108 +5,112 @@ import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { Router } from '@angular/router';
 const LoginMutation = gql`
-  mutation LoginMutation($data:LoginInput!){
-    login(data: $data) {
-      access_token
-      refresh_token
-      expires_in
-    }
-  }
+	mutation LoginMutation($data: LoginInput!) {
+		login(data: $data) {
+			access_token
+			refresh_token
+			expires_in
+		}
+	}
 `;
 
 const LoginFormGetUserInfoQuery = gql`
-  query LoginFormGetUserInfoQuery($username:String!){
-    user(username:$username){
-      username
-      email
-      name
-      user_type
-      UserFavourites {
-        video_id
-      }
-    }
-  }
+	query LoginFormGetUserInfoQuery($username: String!) {
+		user(username: $username) {
+			username
+			email
+			name
+			user_type
+		}
+	}
 `;
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+	selector: 'app-login',
+	templateUrl: './login.component.html',
+	styleUrls: [ './login.component.css' ]
 })
 export class LoginComponent implements OnInit {
-  validateForm: FormGroup;
-  @Input() isNotAdmin = false;
+	validateForm: FormGroup;
+	@Input() loading = false;
+	@Input() isNotAdmin = false;
+	@Input() isNotUser = false;
 
-  submitForm(): void {
-    for (const i in this.validateForm.controls) {
-      this.validateForm.controls[i].markAsDirty();
-      this.validateForm.controls[i].updateValueAndValidity();
-      
-    }
-    
-    if(this.validateForm.controls.userName.status=="VALID"&&this.validateForm.controls.password.status=="VALID"){
-      console.log("VALID Done",this.validateForm.controls);
-      this.newRepository(
-        {
-          username:this.validateForm.controls.userName.value,
-          password:this.validateForm.controls.password.value
-        }
-      );
-    }
-  }
+	submitForm(): void {
+		for (const i in this.validateForm.controls) {
+			this.validateForm.controls[i].markAsDirty();
+			this.validateForm.controls[i].updateValueAndValidity();
+		}
 
-  constructor(
-    private fb: FormBuilder,
-    private apollo: Apollo,
-    private Token:TokenService,
-    private router: Router
-  ) {}
+		if (
+			this.validateForm.controls.userName.status == 'VALID' &&
+			this.validateForm.controls.password.status == 'VALID'
+		) {
+			console.log('VALID Done', this.validateForm.controls);
+			this.loading = true;
+			this.isNotUser = false;
+			this.isNotAdmin = false;
+			this.newRepository({
+				username: this.validateForm.controls.userName.value,
+				password: this.validateForm.controls.password.value
+			});
+		}
+	}
 
-  newRepository(userData): void {
-    this.apollo.mutate({
-      mutation: LoginMutation,
-      variables: {
-        data:userData
-      }
-    }).subscribe(({ data }) => {
-      console.log('got data', data);
-      this.Token.set(data.login.access_token,data.login.refresh_token);
-      this.getUserInfo(userData);
-      
-    },(error) => {
-      console.log('there was an error sending the query', error);
-    });
-  }
+	constructor(private fb: FormBuilder, private apollo: Apollo, private Token: TokenService, private router: Router) {}
 
-  getUserInfo(userData): void {
-    this.apollo.watchQuery<any>({
-      query: LoginFormGetUserInfoQuery,
-      variables: {
-        username: userData.username
-      },
-    })
-      .valueChanges
-      .subscribe(({ data, loading }) => {
-        console.log("Get User Data:",data);
-        if(data.user.user_type!=2){
-          localStorage.removeItem("access_token")
-          localStorage.removeItem("refresh_token")
-          this.isNotAdmin=true;
-        }
-        else
-        {
-          this.isNotAdmin=false;
-          localStorage.setItem("user_data",JSON.stringify(data.user));
-          this.router.navigate(['/m']);
-        }
-        
-      });
-  }
+	newRepository(userData): void {
+		this.apollo
+			.mutate({
+				mutation: LoginMutation,
+				variables: {
+					data: userData
+				}
+			})
+			.subscribe(
+				({ data }) => {
+					console.log('got data', data);
+					this.Token.set(data.login.access_token, data.login.refresh_token);
+					this.getUserInfo(userData);
+				},
+				(error) => {
+					console.log(error);
+					if (error == 'Error: GraphQL error: The user credentials were incorrect.') {
+						this.loading = false;
+						this.isNotUser = true;
+					}
+				}
+			);
+	}
 
-  ngOnInit(): void {
-    this.validateForm = this.fb.group({
-      userName: [null, [Validators.required]],
-      password: [null, [Validators.required]]
-    });
-  }
+	getUserInfo(userData): void {
+		this.apollo
+			.watchQuery<any>({
+				query: LoginFormGetUserInfoQuery,
+				variables: {
+					username: userData.username
+				}
+			})
+			.valueChanges.subscribe(({ data, loading }) => {
+				console.log('Get User Data:', data);
+				if (data.user.user_type != 2) {
+					localStorage.removeItem('access_token');
+					localStorage.removeItem('refresh_token');
+					this.isNotAdmin = true;
+					this.loading = false;
+				} else {
+					this.isNotAdmin = false;
+					this.loading = false;
+					localStorage.setItem('user_data', JSON.stringify(data.user));
+					this.router.navigate([ '/m' ]);
+				}
+			});
+	}
+
+	ngOnInit(): void {
+		this.validateForm = this.fb.group({
+			userName: [ null, [ Validators.required ] ],
+			password: [ null, [ Validators.required ] ]
+		});
+	}
 }

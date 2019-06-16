@@ -3,7 +3,7 @@
       <nz-form-item>
         <nz-form-control>
           <nz-input-group [nzPrefix]="prefixUser">
-            <input type="text" nz-input formControlName="userName" placeholder="Username" />
+            <input type="text" nz-input formControlName="userName" [attr.disabled]="loading||null" placeholder="Username" />
           </nz-input-group>
           <nz-form-explain *ngIf="validateForm.get('userName')?.dirty && validateForm.get('userName')?.errors"
             >Please input your username!</nz-form-explain
@@ -13,7 +13,7 @@
       <nz-form-item>
         <nz-form-control>
           <nz-input-group [nzPrefix]="prefixLock">
-            <input type="password" nz-input formControlName="password" placeholder="Password" />
+            <input type="password" nz-input formControlName="password" [attr.disabled]="loading||null" placeholder="Password" />
           </nz-input-group>
           <nz-form-explain *ngIf="validateForm.get('password')?.dirty && validateForm.get('password')?.errors"
             >Please input your Password!</nz-form-explain
@@ -26,12 +26,15 @@
           <nz-form-explain *ngIf="isNotAdmin"
             >Your Acount is not allow to access!</nz-form-explain
           >
+          <nz-form-explain *ngIf="isNotUser"
+            >Wrong Username or password, Please try again!</nz-form-explain
+          >
        
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>
    
-          <button nz-button class="login-form-button" [nzType]="'primary'">Log in</button>
+          <button nz-button class="login-form-button" [nzLoading]="loading" [nzType]="'primary'">Log in</button>
  
         </nz-form-control>
       </nz-form-item>
