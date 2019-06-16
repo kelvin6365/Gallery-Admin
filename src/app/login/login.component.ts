@@ -50,6 +50,8 @@ export class LoginComponent implements OnInit {
 			this.loading = true;
 			this.isNotUser = false;
 			this.isNotAdmin = false;
+			this.validateForm.controls.userName.disable();
+			this.validateForm.controls.password.disable();
 			this.newRepository({
 				username: this.validateForm.controls.userName.value,
 				password: this.validateForm.controls.password.value
@@ -78,6 +80,8 @@ export class LoginComponent implements OnInit {
 					if (error == 'Error: GraphQL error: The user credentials were incorrect.') {
 						this.loading = false;
 						this.isNotUser = true;
+						this.validateForm.controls.userName.enable();
+						this.validateForm.controls.password.enable();
 					}
 				}
 			);
@@ -98,9 +102,9 @@ export class LoginComponent implements OnInit {
 					localStorage.removeItem('refresh_token');
 					this.isNotAdmin = true;
 					this.loading = false;
+					this.validateForm.controls.userName.enable();
+					this.validateForm.controls.password.enable();
 				} else {
-					this.isNotAdmin = false;
-					this.loading = false;
 					localStorage.setItem('user_data', JSON.stringify(data.user));
 					this.router.navigate([ '/m' ]);
 				}

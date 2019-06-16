@@ -82,12 +82,13 @@ export class UserlistComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit(): void {
+		console.log('start');
 		this.querySubscription = this.apollo
 			.watchQuery<any>({
 				query: GetUserList
 			})
 			.valueChanges.subscribe(({ data, loading, errors }) => {
-				console.log(data, errors);
+				console.log(data, errors, 'Result');
 				if (errors) {
 					this.errors = errors;
 					//console.log(this.errors[0]);
